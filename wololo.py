@@ -5,7 +5,8 @@ import traceback
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 BOT_ID = os.getenv("BOT_ID")
-AUDIO_ROOT_PATH = os.getenv("AUDIO_ROOT_PATH")
+AUDIO_ROOT_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "audio")
 
 client = discord.Client()
 
