@@ -1,7 +1,10 @@
 import discord
+from dotenv import load_dotenv
 import os
 import re
 import traceback
+
+load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 BOT_ID = os.getenv("BOT_ID")
