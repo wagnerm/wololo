@@ -19,28 +19,12 @@ class BaseCommand(object):
         self.name = name
         self.commands = []
 
-    def register(self, name, regex, help, func):
+    def register(self, name, regex, func):
         self.commands.append({
             "name": name,
             "regex": regex,
-            "help": help,
             "func": func,
         })
-
-    def help(self, indent=4):
-        message_indent = " " * indent
-        message = [
-            'Command help:',
-        ]
-        for command in self.commands:
-            if command["name"] is None:
-                message.append(
-                    "{}`{}` - {}".format(message_indent, self.name, command["help"]))
-            else:
-                message.append("{}`{} {}` - {}".format(
-                    message_indent, self.name, command["name"], command["help"]))
-
-        return "\n".join(message)
 
     async def handle_message(self, message, message_content):
         if message_content:
@@ -93,7 +77,7 @@ class AudioCommand(object):
 class Wololo(BaseCommand, AudioCommand):
     def __init__(self):
         super(Wololo, self).__init__("wololo")
-        self.register(None, ".*wololo.*", "Try me", self.wololo)
+        self.register(None, ".*wololo.*", self.wololo)
 
     async def wololo(self, message, message_content):
         audio_source = discord.FFmpegPCMAudio(
