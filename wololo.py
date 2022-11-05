@@ -11,6 +11,8 @@ load_dotenv()
 intents = discord.Intents(
     message_content=True,
     messages=True,
+    voice_states=True,
+    guilds=True,
 )
 
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -53,34 +55,24 @@ class DiscordConnectionFailure(Exception):
 
 
 class AudioCommand(object):
-
-    async def connect(self, message):
-        voice_channel = message.author.voice.channel
-
-        try:
-            return await voice_channel.connect(reconnect=False)
-        except discord.ClientException:
-            # Already connected, attempt to attain VoiceClient
-            return voice_channel.guild.voice_client
-
-        raise DiscordConnectionFailure("VoiceClient cannot be attained!")
-
     async def play_in_channel(self, message, audio_source):
-        author_voice = message.author.voice
-        if author_voice == None:
+        author_voice_state = message.author.voice
+        if author_voice_state == None:
             print(f"{message.author} not in voice channel, skipping")
             return
 
-        voice_client = await self.connect(message)
-        if voice_client.is_playing():
-            voice_client.stop()
+        if self.voice_client is None or not self.voice_client.is_connected():
+            self.voice_client = await author_voice_state.channel.connect(reconnect=False)
+        if self.voice_client.is_playing():
+            self.voice_client.stop()
 
-        voice_client.play(audio_source)
+        self.voice_client.play(audio_source)
 
 
 class Wololo(BaseCommand, AudioCommand):
     def __init__(self):
         super(Wololo, self).__init__("wololo")
+        self.voice_client = None
         self.register(None, ".*wololo.*", self.wololo)
 
     async def wololo(self, message, message_content):
