@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import discord
 from dotenv import load_dotenv
 import os
@@ -6,12 +8,14 @@ import traceback
 
 load_dotenv()
 
+intents = discord.Intents(
+    message_content=True,
+    messages=True,
+)
+
 TOKEN = os.getenv("DISCORD_TOKEN")
-BOT_ID = os.getenv("BOT_ID")
 AUDIO_ROOT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "audio")
-
-client = discord.Client()
 
 
 class BaseCommand(object):
@@ -86,8 +90,8 @@ class Wololo(BaseCommand, AudioCommand):
 
 
 class Bot(discord.Client):
-    def __init__(self):
-        super(Bot, self).__init__()
+    def __init__(self, intents):
+        super(Bot, self).__init__(intents=intents)
         self.handlers = [
             Wololo(),
         ]
@@ -109,5 +113,5 @@ class Bot(discord.Client):
             print(traceback.format_exc())
 
 
-chat = Bot()
+chat = Bot(intents)
 chat.run(TOKEN)
